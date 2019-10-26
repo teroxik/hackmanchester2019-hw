@@ -48,9 +48,10 @@ void loop()
         sms.send(callback_number, std::string(data));
     }
 
-    bool v0 = digitalRead(pins::vote_0) == LOW;
-    bool v1 = false; //digitalRead(pins::vote_1) == LOW;
-    bool v2 = false; //digitalRead(pins::vote_2) == LOW;
+    int x = analogRead(pins::vote_0);
+    bool v0 = x > 200 && x < 300;
+    bool v1 = x > 500 && x < 600;
+    bool v2 = x > 800 && x < 900;
 
     if (v0 || v1 || v2)
     {
