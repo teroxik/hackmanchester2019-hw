@@ -1,10 +1,11 @@
 #include "pod.h"
 #include <Arduino.h>
+#include "pins.h"
 
 pod_container::pod_container()
 {
-    pods.push_back(make_led_pod(0, -1, D0, D3));
-    pods.push_back(make_led_pod(5, D4, -1, D5));
+    pods.push_back(make_led_pod(0, pins::sunday_red, pins::sunday_green, pins::sunday_detect)); // 0, -1, D0, D3
+    pods.push_back(make_led_pod(5, pins::friday_red, pins::friday_green, pins::friday_detect)); // 5, D4, -1, D5
 }
 
 void pod_container::begin()

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <memory>
 #include "sms.h"
+#include "pins.h"
 
 payload transport::last_payload() const
 {
@@ -31,7 +32,7 @@ void transport::begin()
     Serial.begin(9600);
     delay(5000); // magic delay for network conn
 
-    serial.begin(9600, D1, D2);
+    serial.begin(9600, pins::sms_rx, pins::sms_tx); // D1 D2
     println("AT");
     println("AT+CSQ");
     println("AT+CNUM");
