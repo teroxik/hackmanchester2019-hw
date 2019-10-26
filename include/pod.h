@@ -13,7 +13,9 @@ struct pod
 
     bool taken_incorrectly() const
     {
-        return taken_at < prompted_at;
+        if (prompted_at == 0)
+            return taken_at > 0;
+        return false;
     }
 };
 

@@ -20,7 +20,8 @@ void loop()
         Serial.println("Got valid command");
         Serial.println(sms.last_message().code);
         Serial.println(sms.last_message().param);
-        sms.send(callback_number, "Got valid cmd");
+        if (sms.last_message().code == 'T')
+            pod_container.take_now(sms.last_message().param);
     }
 
     auto updated_pods = pod_container.loop();

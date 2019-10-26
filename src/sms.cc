@@ -72,4 +72,8 @@ void transport::loop()
         this->lm.code = cmd[0];
         this->lm.param = 0x30 - cmd[1];
     }
+    else
+    {
+        this->lm.code = 0;
+    }
 }
