@@ -35,7 +35,13 @@ std::vector<led_pod> pod_container::loop()
     for (auto &&pod : pods)
     {
         if (pod.take_now() && pod.green_pin != -1)
-            digitalWrite(pod.green_pin, HIGH);
+        {
+            if (pod.taken_correctly())
+                digitalWrite(pod.green_pin, LOW);
+            else
+                digitalWrite(pod.green_pin, HIGH);
+        }
+
         if (pod.taken_incorrectly() && pod.red_pin != -1)
             digitalWrite(pod.red_pin, HIGH);
     }

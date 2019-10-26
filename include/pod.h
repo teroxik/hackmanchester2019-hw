@@ -17,6 +17,11 @@ struct pod
             return taken_at > 0;
         return false;
     }
+
+    bool taken_correctly() const
+    {
+        return taken_at > prompted_at;
+    }
 };
 
 struct led_pod : pod
