@@ -1,6 +1,5 @@
 #include "pins.h"
 #include "vote.h"
-#include <FastLED.h>
 
 void vote::begin()
 {

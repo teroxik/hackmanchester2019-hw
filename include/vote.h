@@ -1,5 +1,3 @@
-#include <FastLED.h>
-
 struct vote_result
 {
     int value;
@@ -10,7 +8,6 @@ class vote
 {
 private:
     static constexpr int num_leds = 0;
-    CRGB leds[num_leds];
     bool show_vote_now;
 
 public:
