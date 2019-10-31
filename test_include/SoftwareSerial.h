@@ -3,8 +3,20 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <chrono>
 
 class SoftwareSerial;
+
+class software_serial_control
+{
+public:
+    virtual void wait_rx(const std::string write, const std::chrono::duration<uint, std::milli> timeout) = 0;
+    virtual void tx(const std::string tx) = 0;
+    virtual void add_auto_rxtx(const std::string request,
+                               const std::string response,
+                               const std::chrono::duration<uint, std::milli> timeout) = 0;
+    virtual void set_blocking(const bool blocking) = 0;
+};
 
 class software_serial_mock
 {
@@ -21,7 +33,7 @@ public:
     software_serial_mock(software_serial_mock const &) = delete;
     void operator=(software_serial_mock const &) = delete;
 
-    void add_software_serial(SoftwareSerial *instance, const int baud, const int rx_pin, const int tx_pin)
+    void add(SoftwareSerial *instance, const int baud, const int rx_pin, const int tx_pin)
     {
         mock_instances.push_back(std::make_tuple(baud, rx_pin, tx_pin, instance));
     }
@@ -39,6 +51,10 @@ public:
     void write(char){};
     char read() { return -1; };
     bool available() { return false; }
+    void begin(int baud, int rx_pin, int tx_pin)
+    {
+        software_serial_mock::instance().add(this, baud, rx_pin, tx_pin);
+    }
 
     std::vector<std::string> get_writes() const;
     std::string set_read(const std::string content);
