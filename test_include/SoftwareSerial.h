@@ -36,10 +36,6 @@ private:
 public:
     void print(const char *line) { writes.push_back(std::string(line)); }
     void println(const char *line) { writes.push_back(std::string(line)); }
-    void begin(int baud, int rx_pin, int tx_pin)
-    {
-        software_serial_mock::instance().add_software_serial(this, baud, rx_pin, tx_pin);
-    }
     void write(char){};
     char read() { return -1; };
     bool available() { return false; }

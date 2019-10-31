@@ -11,8 +11,6 @@ SoftwareSerial *software_serial_mock::get(const int rx_pin) const
         return std::get<1>(x) == rx_pin;
     });
     if (found != std::end(mock_instances))
-    {
         return std::get<3>(*found);
-    };
     throw nullptr;
 }
