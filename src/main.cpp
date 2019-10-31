@@ -56,10 +56,3 @@ void loop()
         sms.send(callback_number, std::string(data));
     }
 }
-
-#ifndef Arduino
-extern "C" int main(int, char **)
-{
-    return 0;
-}
-#endif
