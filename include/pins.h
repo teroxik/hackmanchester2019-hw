@@ -1,7 +1,6 @@
 #include <Arduino.h>
 
-namespace pins
-{
+namespace pins {
 #if PLATFORM == 1
 constexpr int sunday_green = D0;
 constexpr int sunday_red = -1;
@@ -55,4 +54,4 @@ constexpr int vote_1 = 9;
 // constexpr int vote_2 = D8; // A0??
 constexpr int vote_now = 10;
 #endif
-}; // namespace pins
+};  // namespace pins
