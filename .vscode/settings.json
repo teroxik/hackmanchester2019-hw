@@ -41,6 +41,10 @@
         "unordered_set": "cpp",
         "iomanip": "cpp",
         "iostream": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "cstddef": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "mutex": "cpp"
     }
 }
