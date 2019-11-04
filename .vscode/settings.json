@@ -45,6 +45,9 @@
         "cstddef": "cpp",
         "ratio": "cpp",
         "system_error": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "optional": "cpp",
+        "random": "cpp",
+        "string": "cpp"
     }
 }

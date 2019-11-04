@@ -46,8 +46,8 @@ constexpr int friday_red = 3;
 constexpr int friday_green = 4;
 constexpr int friday_detect = 5;
 
-constexpr int sms_rx = 6;
-constexpr int sms_tx = 7;
+constexpr int sms_rx = 100;
+constexpr int sms_tx = 101;
 
 constexpr int vote_0 = 8;
 constexpr int vote_1 = 9;

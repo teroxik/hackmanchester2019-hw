@@ -1,8 +1,8 @@
+#pragma once
 #include <chrono>
 #include <iostream>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -10,20 +10,40 @@ class SoftwareSerial;
 
 using payload = std::string;
 
+struct duplicate_software_serial {
+  int baud;
+  int rx_pin;
+  int tx_pin;
+};
+
 class software_serial_control {
+ private:
+  payload tx;
+  payload rx;
+  unsigned int rx_position;
+  std::map<payload, payload> auto_responses;
+
+ protected:
+  void append(payload payload);
+
  public:
-  virtual void wait_rx(payload content,
-                       std::chrono::duration<uint, std::milli> timeout) = 0;
-  virtual void tx(payload content) = 0;
-  virtual void add_auto_rxtx(
-      payload request, payload response,
-      std::chrono::duration<uint, std::milli> timeout) = 0;
-  virtual void set_blocking(bool blocking) = 0;
+  // void wait_tx(payload content,
+  //              std::chrono::duration<uint, std::milli> timeout);
+  void add_auto_response(payload request, payload response,
+                         std::chrono::duration<uint, std::milli> timeout =
+                             std::chrono::milliseconds(0));
+  void write(payload payload);
+  bool available() const;
+  char read();
+
+  payload get_tx() const;
 };
 
 class software_serial_mock {
  private:
-  std::vector<std::tuple<int, int, int, SoftwareSerial *>> mock_instances;
+  std::vector<
+      std::tuple<int, int, int, std::shared_ptr<software_serial_control>>>
+      mock_controls;
   software_serial_mock() = default;
 
  public:
@@ -34,26 +54,26 @@ class software_serial_mock {
   software_serial_mock(software_serial_mock const &) = delete;
   void operator=(software_serial_mock const &) = delete;
 
-  void add(SoftwareSerial *instance, int baud, int rx_pin, const int tx_pin) {
-    mock_instances.emplace_back(baud, rx_pin, tx_pin, instance);
-  }
-  SoftwareSerial *get(const int rx_pin) const;
+  std::shared_ptr<software_serial_control> get(int baud, int rx_pin,
+                                               int tx_pin);
+  std::shared_ptr<software_serial_control> get(int rx_pin);
 };
 
 class SoftwareSerial {
  private:
-  std::vector<payload> writes;
+  std::shared_ptr<software_serial_control> control;
 
  public:
-  void print(const char *line) { writes.emplace_back(line); }
-  void println(const char *line) { writes.emplace_back(line); }
-  void write(char){};
-  char read() { return -1; };
-  bool available() { return false; }
-  void begin(int baud, int rx_pin, int tx_pin) {
-    software_serial_mock::instance().add(this, baud, rx_pin, tx_pin);
-  }
+  void print(const char *line) { control->write(line); };
+  void println(const char *line) { control->write(std::string(line) + "\n"); };
+  void println(const int x) { control->write(std::to_string(x) + "\n"); };
+  void println(const char c) { control->write(std::to_string(c) + "\n"); };
+  void write(const char c) { control->write(std::to_string(c)); };
+  char read() { return control->read(); };
+  bool available() { return control->available(); }
 
-  std::vector<payload> get_writes() const;
-  void set_read(payload content);
+  void begin(int baud) { begin(baud, -1, -1); }
+  void begin(int baud, int rx_pin, int tx_pin) {
+    control = software_serial_mock::instance().get(baud, rx_pin, tx_pin);
+  }
 };
