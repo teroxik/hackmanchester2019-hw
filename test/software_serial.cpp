@@ -1,4 +1,4 @@
-#include <SoftwareSerial.h>
+#include <EspSoftwareSerial/SoftwareSerial.h>
 
 std::shared_ptr<software_serial_control> software_serial_mock::get(int rx_pin) {
   return get(-1, rx_pin, -1);

@@ -1,5 +1,3 @@
-#include <Arduino.h>
-
 namespace pins {
 #if PLATFORM == 1
 constexpr int sunday_green = D0;

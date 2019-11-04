@@ -1,15 +1,9 @@
-struct vote_result {
-  int value;
-  bool is_valid() const { return value != -1; }
-};
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
 
 class vote {
  private:
-  static constexpr int num_leds = 0;
-  bool show_vote_now;
-
  public:
-  void begin();
+  QueueHandle_t begin();
   void vote_now();
-  vote_result loop();
 };

@@ -1,27 +1,27 @@
-#include <SoftwareSerial.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
 #include <memory>
 
-using payload = std::string;
 using phone_number = std::string;
-struct message {
+
+struct command {
   char code;
   uint8_t param;
+};
 
-  bool is_valid() const { return code == 'T' || code == 'V'; }
+union event {
+  using error_code = uint8_t;
+  struct error_event {
+    error_code code;
+  };
+  struct drug_event {};
 };
 
 class transport {
  private:
-  payload lp;
-  message lm;
-  SoftwareSerial serial;
-  void print(const payload payload);
-  void println(const payload payload);
+  QueueHandle_t queue_handle;
 
  public:
-  void begin();
-  void loop();
-  void send(const phone_number phone_number, const payload payload);
-  payload last_payload() const;
-  message last_message() const;
+  QueueHandle_t begin();
+  void send(const phone_number phone_number, const event event);
 };
