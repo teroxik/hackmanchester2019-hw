@@ -16,12 +16,18 @@ struct duplicate_software_serial {
   int tx_pin;
 };
 
+struct auto_response_record {
+  payload response;
+  int count;
+};
+
 class software_serial_control {
  private:
   payload tx;
   payload rx;
   unsigned int rx_position;
   std::map<payload, payload> auto_responses;
+  std::map<payload, auto_response_record> auto_response_records;
 
  protected:
   void append(payload payload);

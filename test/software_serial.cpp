@@ -39,6 +39,7 @@ void software_serial_control::write(payload payload) {
     rx = found->second;
     std::cout << "found " << rx << std::endl;
   }
+
   tx = tx + payload;
 }
 
