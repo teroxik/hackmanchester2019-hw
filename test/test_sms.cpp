@@ -13,7 +13,7 @@ void test_foo() {
   t.loop();
 
   auto writes =
-      software_serial_mock::instance().get(pins::sms_rx)->get_writes();
+      (*software_serial_mock::instance().get(pins::sms_rx))->get_writes();
   std::for_each(std::begin(writes), std::end(writes),
                 [](const auto &w) { std::cout << w << std::endl; });
 }
