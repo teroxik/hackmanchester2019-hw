@@ -4,9 +4,10 @@
 #include <freertos/queue.h>
 #include <freertos/semphr.h>
 #include <freertos/task.h>
+#include <math.h>
 #include "sdkconfig.h"
 
-#define INTR
+#define INTRx
 
 #define MIN_DELAY 10
 #define BUTTON_GPIO GPIO_NUM_17
@@ -14,6 +15,8 @@
 
 // static xQueueHandle gpio_evt_queue = nullptr;
 static xSemaphoreHandle semaphore_handle = nullptr;
+
+void other_task_compute() { vTaskDelay(pdMS_TO_TICKS(100)); }
 
 void led_task(void* arg) {
   bool x = false;
@@ -64,10 +67,20 @@ extern "C" void app_main(void) {
   gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
   gpio_isr_handler_add(BUTTON_GPIO, button_isr_handler, nullptr);
 #else
+  // bool light = false;
+  // while (1) {
+  //   if (gpio_get_level(BUTTON_GPIO) == 0) {
+  //     light = !light;
+  //     gpio_set_level(BLINK_GPIO, light);
+  //   }
+  //   esp_task_wdt_reset();
+  // }
+
   auto last_time = 0;
   bool light = false;
   bool was_high = true;
   while (1) {
+    other_task_compute();
     auto now = xTaskGetTickCount();
     if (gpio_get_level(BUTTON_GPIO) == 0) {
       if (was_high && now - last_time > MIN_DELAY) {
@@ -80,7 +93,7 @@ extern "C" void app_main(void) {
       was_high = true;
     }
 
-    vTaskDelay(1);
+    esp_task_wdt_reset();
   }
 #endif
 }
