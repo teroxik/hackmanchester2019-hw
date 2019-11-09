@@ -255,7 +255,7 @@
                 "WITH_POSIX",
                 "UNITY_INCLUDE_CONFIG_H",
                 "IDF_VER=\"3.30300.190916\"",
-                "PLATFORMIO=40003",
+                "PLATFORMIO=40100",
                 "ARDUINO_ESP32_DEV",
                 "PLATFORM=2",
                 "DEBUG=1",

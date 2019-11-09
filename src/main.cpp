@@ -7,11 +7,12 @@
 #include <math.h>
 #include "sdkconfig.h"
 
-#define INTRx
+#define INTR
 
-#define MIN_DELAY 10
+#define MIN_DELAY pdMS_TO_TICKS(5)
 #define BUTTON_GPIO GPIO_NUM_17
 #define BLINK_GPIO GPIO_NUM_5
+#define CLK_GPIO GPIO_NUM_15
 
 // static xQueueHandle gpio_evt_queue = nullptr;
 static xSemaphoreHandle semaphore_handle = nullptr;
@@ -55,6 +56,9 @@ extern "C" void app_main(void) {
   gpio_pad_select_gpio(BLINK_GPIO);
   gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
 
+  gpio_pad_select_gpio(CLK_GPIO);
+  gpio_set_direction(CLK_GPIO, GPIO_MODE_OUTPUT);
+
   gpio_pad_select_gpio(BUTTON_GPIO);
   gpio_set_direction(BUTTON_GPIO, GPIO_MODE_INPUT);
   gpio_set_pull_mode(BUTTON_GPIO, GPIO_PULLUP_ONLY);
@@ -66,21 +70,34 @@ extern "C" void app_main(void) {
   xTaskCreate(led_task, "led_task", 2048, NULL, 10, NULL);
   gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
   gpio_isr_handler_add(BUTTON_GPIO, button_isr_handler, nullptr);
+
+  bool x = false;
+  while (1) {
+    gpio_set_level(CLK_GPIO, x);
+    x = !x;
+    vTaskDelay(pdMS_TO_TICKS(50));
+  }
 #else
+  bool x = false;
   // bool light = false;
+  // bool x = false;
+  // esp_task_wdt_init(portMAX_DELAY, false);
   // while (1) {
+  //   gpio_set_level(CLK_GPIO, x);
+  //   x = !x;
   //   if (gpio_get_level(BUTTON_GPIO) == 0) {
   //     light = !light;
   //     gpio_set_level(BLINK_GPIO, light);
   //   }
-  //   esp_task_wdt_reset();
+  //   vTaskDelay(pdMS_TO_TICKS(50));
   // }
 
   auto last_time = 0;
   bool light = false;
   bool was_high = true;
   while (1) {
-    other_task_compute();
+    gpio_set_level(CLK_GPIO, x);
+    x = !x;
     auto now = xTaskGetTickCount();
     if (gpio_get_level(BUTTON_GPIO) == 0) {
       if (was_high && now - last_time > MIN_DELAY) {
@@ -93,7 +110,7 @@ extern "C" void app_main(void) {
       was_high = true;
     }
 
-    esp_task_wdt_reset();
+    vTaskDelay(pdMS_TO_TICKS(50));
   }
 #endif
 }
