@@ -70,13 +70,6 @@ extern "C" void app_main(void) {
   xTaskCreate(led_task, "led_task", 2048, NULL, 10, NULL);
   gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
   gpio_isr_handler_add(BUTTON_GPIO, button_isr_handler, nullptr);
-
-  bool x = false;
-  while (1) {
-    gpio_set_level(CLK_GPIO, x);
-    x = !x;
-    vTaskDelay(pdMS_TO_TICKS(50));
-  }
 #else
   bool x = false;
   // bool light = false;
@@ -92,25 +85,25 @@ extern "C" void app_main(void) {
   //   vTaskDelay(pdMS_TO_TICKS(50));
   // }
 
-  auto last_time = 0;
-  bool light = false;
-  bool was_high = true;
-  while (1) {
-    gpio_set_level(CLK_GPIO, x);
-    x = !x;
-    auto now = xTaskGetTickCount();
-    if (gpio_get_level(BUTTON_GPIO) == 0) {
-      if (was_high && now - last_time > MIN_DELAY) {
-        last_time = now;
-        light = !light;
-        gpio_set_level(BLINK_GPIO, light);
-      }
-      was_high = false;
-    } else {
-      was_high = true;
-    }
+  // auto last_time = 0;
+  // bool light = false;
+  // bool was_high = true;
+  // while (1) {
+  //   gpio_set_level(CLK_GPIO, x);
+  //   x = !x;
+  //   auto now = xTaskGetTickCount();
+  //   if (gpio_get_level(BUTTON_GPIO) == 0) {
+  //     if (was_high && now - last_time > MIN_DELAY) {
+  //       last_time = now;
+  //       light = !light;
+  //       gpio_set_level(BLINK_GPIO, light);
+  //     }
+  //     was_high = false;
+  //   } else {
+  //     was_high = true;
+  //   }
 
-    vTaskDelay(pdMS_TO_TICKS(50));
-  }
+  //   vTaskDelay(pdMS_TO_TICKS(50));
+  // }
 #endif
 }
