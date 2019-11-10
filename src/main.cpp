@@ -57,7 +57,7 @@ void rainbow(void* pvParameters) {
 
   const auto pixel_count = 28;
   const auto delay = 1000;
-  const auto green = makeRGBVal(0, 100, 0);
+  const auto green = makeRGBVal(0, 50, 0);
   const auto none = makeRGBVal(0, 0, 0);
   auto pixels = new rgbVal[pixel_count];
 
