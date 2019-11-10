@@ -6,9 +6,11 @@
 #include <freertos/task.h>
 #include <math.h>
 #include "sdkconfig.h"
+#include "ws2812.h"
 
 #define MIN_DELAY 50
 #define BUTTON_GPIO GPIO_NUM_17
+#define LED_GPIO GPIO_NUM_18
 #define BLINK_GPIO GPIO_NUM_5
 #define CLK_GPIO GPIO_NUM_15
 
@@ -50,6 +52,32 @@ void IRAM_ATTR button_isr_handler(void* arg) {
   }
 }
 
+void rainbow(void* pvParameters) {
+  ws2812_init(GPIO_NUM_18);
+
+  const auto pixel_count = 28;
+  const auto delay = 1000;
+  const auto green = makeRGBVal(0, 100, 0);
+  const auto none = makeRGBVal(0, 0, 0);
+  auto pixels = new rgbVal[pixel_count];
+
+  uint8_t day = 0;
+  while (1) {
+    day++;
+    if (day > 6) day = 0;
+
+    for (uint8_t i = 0; i < pixel_count; i++) {
+      if (i / 4 == day)
+        pixels[i] = green;
+      else
+        pixels[i] = none;
+    }
+
+    ws2812_setColors(pixel_count, pixels);
+    vTaskDelay(pdMS_TO_TICKS(delay));
+  }
+}
+
 extern "C" void app_main(void) {
   gpio_pad_select_gpio(BLINK_GPIO);
   gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
@@ -67,4 +95,6 @@ extern "C" void app_main(void) {
   xTaskCreate(led_task, "led_task", 2048, NULL, 10, NULL);
   gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
   gpio_isr_handler_add(BUTTON_GPIO, button_isr_handler, nullptr);
+
+  xTaskCreate(rainbow, "ws2812 rainbow demo", 4096, NULL, 10, NULL);
 }
