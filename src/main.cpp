@@ -92,9 +92,9 @@ extern "C" void app_main(void) {
 
   semaphore_handle = xSemaphoreCreateBinary();
   // gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
-  xTaskCreate(led_task, "led_task", 2048, NULL, 10, NULL);
+  xTaskCreate(led_task, "led_task", 2048, nullptr, 10, nullptr);
   gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
   gpio_isr_handler_add(BUTTON_GPIO, button_isr_handler, nullptr);
 
-  xTaskCreate(led_strip, "led_strip", 4096, NULL, 10, NULL);
+  xTaskCreate(led_strip, "led_strip", 4096, nullptr, 10, nullptr);
 }
