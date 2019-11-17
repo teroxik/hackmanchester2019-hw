@@ -9,29 +9,6 @@
 #include "pod.h"
 #include "sdkconfig.h"
 
-#define MIN_DELAY 50
-
-static xSemaphoreHandle semaphore_handle = nullptr;
-
-void led_task(void* arg) {
-  bool x = false;
-  while (true) {
-    xSemaphoreTake(semaphore_handle, portMAX_DELAY);
-    x = !x;
-    gpio_set_level(BLINK_GPIO, x);
-  }
-}
-
-void IRAM_ATTR button_isr_handler(void* arg) {
-  static auto last_time = 0;
-  auto now = xTaskGetTickCountFromISR();
-  if (now - last_time > MIN_DELAY) {
-    auto ignored = pdFALSE;
-    xSemaphoreGiveFromISR(semaphore_handle, &ignored);
-    last_time = now;
-  }
-}
-
 extern "C" void app_main(void) {
   // gpio_pad_select_gpio(BLINK_GPIO);
   // gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
