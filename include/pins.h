@@ -1,55 +1,14 @@
-namespace pins {
-#if PLATFORM == 1
-constexpr int sunday_green = D0;
-constexpr int sunday_red = -1;
-constexpr int sunday_detect = D3;
+#include <driver/gpio.h>
 
-constexpr int friday_red = D4;
-constexpr int friday_green = -1;
-constexpr int friday_detect = D5;
+#define BUTTON_GPIO GPIO_NUM_17
+#define LED_GPIO GPIO_NUM_18
+#define BLINK_GPIO GPIO_NUM_5
+#define CLK_GPIO GPIO_NUM_15
 
-constexpr int sms_rx = D1;
-constexpr int sms_tx = D2;
+#define POD_IR_GPIO GPIO_NUM_9
+#define POD_LID_GPIO GPIO_NUM_23
+#define LED_STRIP_GPIO GPIO_NUM_18
 
-constexpr int vote_0 = A0;
-constexpr int vote_1 = D9;
-// constexpr int vote_2 = D8; // A0??
-constexpr int vote_now = D6;
-#endif
-
-#if PLATFORM == 2
-constexpr int sunday_green = 0;
-constexpr int sunday_red = 1;
-constexpr int sunday_detect = 2;
-
-constexpr int friday_red = 3;
-constexpr int friday_green = 4;
-constexpr int friday_detect = 5;
-
-constexpr int sms_rx = 6;
-constexpr int sms_tx = 7;
-
-constexpr int vote_0 = 8;
-constexpr int vote_1 = 9;
-// constexpr int vote_2 = D8; // A0??
-constexpr int vote_now = 10;
-#endif
-
-#if PLATFORM == 3
-constexpr int sunday_green = 0;
-constexpr int sunday_red = 1;
-constexpr int sunday_detect = 2;
-
-constexpr int friday_red = 3;
-constexpr int friday_green = 4;
-constexpr int friday_detect = 5;
-
-constexpr int sms_rx = 100;
-constexpr int sms_tx = 101;
-
-constexpr int vote_0 = 8;
-constexpr int vote_1 = 9;
-// constexpr int vote_2 = D8; // A0??
-constexpr int vote_now = 10;
-#endif
-};  // namespace pins
+bool gpio_stable_check(gpio_num_t pin, int expected, int iterations = 20,
+                       int threshold = 5);
+int gpio_stable_get(gpio_num_t pin, int iterations = 20, int theshold = 5);

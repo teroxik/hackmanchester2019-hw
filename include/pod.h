@@ -1,35 +1,22 @@
-#include <vector>
+#pragma once
+#include <driver/gpio.h>
+#include <esp_task_wdt.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <freertos/semphr.h>
+#include <freertos/task.h>
+#include <math.h>
+#include "sdkconfig.h"
 
-struct pod {
-  unsigned int day;
-  unsigned long taken_at;
-  unsigned long prompted_at;
+extern xQueueHandle podevent_queue;
 
-  bool take_now() const { return prompted_at > 0L; }
+enum pod_status { closed, opened, empty };
 
-  bool taken_incorrectly() const {
-    if (prompted_at == 0) return taken_at > 0;
-    return false;
-  }
-
-  bool taken_correctly() const { return taken_at > prompted_at; }
+struct pod_event {
+  uint8_t number;
+  pod_status status;
 };
 
-struct led_pod : pod {
-  int red_pin;
-  int green_pin;
-  int detect_pin;
-};
+void start_pod_tasks();
 
-led_pod make_led_pod(int day, int red_pin, int green_pin, int detect_pin);
-
-class pod_container {
- private:
-  std::vector<led_pod> pods;
-
- public:
-  pod_container();
-  void begin();
-  void take_now(const unsigned int day);
-  std::vector<led_pod> loop();
-};
+// void end_pod_tasks();
