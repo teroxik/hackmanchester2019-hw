@@ -5,7 +5,16 @@
 #define MIN_DELAY 50
 
 xQueueHandle podevent_queue = nullptr;
-static xSemaphoreHandle podevent_semaphore = nullptr;
+xSemaphoreHandle podevent_semaphore = nullptr;
+
+struct pod_state {
+  uint8_t number;
+  pod_status expected;
+  pod_status current;
+};
+
+const uint8_t pod_count = 7;
+pod_state pod_states[pod_count];
 
 /**
  * This will scan all pods to find out their status and emit
