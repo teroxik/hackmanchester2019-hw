@@ -2,7 +2,7 @@
 #include "pins.h"
 #include "ws2812.h"
 
-#define MIN_DELAY 50
+#define MIN_DELAY 5
 
 xQueueHandle podevent_queue = nullptr;
 xSemaphoreHandle podevent_semaphore = nullptr;
