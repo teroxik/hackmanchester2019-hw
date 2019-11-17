@@ -36,7 +36,7 @@ void podevent_scanner_task(void* arg) {
         printf("lid closed\n");
         xQueueSendToBack(podevent_queue, &event, 50);
       }
-      if (gpio_stable_check(POD_IR_GPIO, 0)) {
+      if (gpio_stable_get(POD_IR_GPIO) == 0) {
         event.number = 0;
         event.status = empty;
         printf("empty\n");
@@ -91,7 +91,7 @@ void podevent_view_task(void* pvParameters) {
               pixels[i] = blue;
               break;
             case empty:
-              pixels[i] = green;
+              pixels[i] = red;
               break;
           }
         } else {
@@ -133,6 +133,13 @@ void start_pod_tasks() {
   gpio_set_intr_type(POD_LID_GPIO, GPIO_INTR_ANYEDGE);
   gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
   gpio_isr_handler_add(POD_LID_GPIO, podevent_isr_handler, nullptr);
+
+  gpio_pad_select_gpio(POD_IR_GPIO);
+  gpio_set_direction(POD_IR_GPIO, GPIO_MODE_INPUT);
+  gpio_set_pull_mode(POD_IR_GPIO, GPIO_PULLUP_ONLY);
+  gpio_set_intr_type(POD_IR_GPIO, GPIO_INTR_ANYEDGE);
+  gpio_install_isr_service(ESP_INTR_FLAG_LEVEL1);
+  gpio_isr_handler_add(POD_IR_GPIO, podevent_isr_handler, nullptr);
 
   xTaskCreate(podevent_view_task, "podevent_view", 4096, nullptr, 10, nullptr);
   xTaskCreate(podevent_scanner_task, "podevent_scanner", 4096, nullptr, 10,
