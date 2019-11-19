@@ -1,7 +1,6 @@
 #include <driver/gpio.h>
 
 #define BUTTON_GPIO GPIO_NUM_17
-#define LED_GPIO GPIO_NUM_18
 #define BLINK_GPIO GPIO_NUM_5
 #define CLK_GPIO GPIO_NUM_15
 
