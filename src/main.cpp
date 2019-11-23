@@ -10,10 +10,39 @@
 #include "sdkconfig.h"
 #include "ws2812.h"
 
-extern "C" void app_main(void) {
-  // gpio_pad_select_gpio(BLINK_GPIO);
-  // gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
+#include <bitset>
+#include <vector>
 
+void delay_nops(int nops) {
+  for (int i = 0; i < nops; i++) {
+    __asm__ __volatile__("nop");
+  }
+}
+
+void ws2812_naive_set(const int pixel_count, const rgbVal* pixels) {
+  gpio_set_level(LED_STRIP_GPIO, 0);
+
+  ets_delay_us(50);
+
+  for (int i = 0; i < pixel_count; i++) {
+    const auto pixel = pixels[i];
+    std::bitset<24> p(pixel.num);
+
+    for (int j = 0; j < 24; j++) {
+      if (p[j]) {
+        gpio_set_level(LED_STRIP_GPIO, 1);
+        delay_nops(14);
+        gpio_set_level(LED_STRIP_GPIO, 0);
+      } else {
+        gpio_set_level(LED_STRIP_GPIO, 1);
+        gpio_set_level(LED_STRIP_GPIO, 0);
+        delay_nops(13);
+      }
+    }
+  }
+}
+
+extern "C" void app_main(void) {
   // gpio_pad_select_gpio(CLK_GPIO);
   // gpio_set_direction(CLK_GPIO, GPIO_MODE_OUTPUT);
 
@@ -29,6 +58,9 @@ extern "C" void app_main(void) {
   // gpio_isr_handler_add(BUTTON_GPIO, button_isr_handler, nullptr);
 
   // start_pod_tasks();
+
+  // gpio_pad_select_gpio(LED_STRIP_GPIO);
+  // gpio_set_direction(LED_STRIP_GPIO, GPIO_MODE_OUTPUT);
 
   ws2812_init(LED_STRIP_GPIO);
   const auto pixel_count = 1;
