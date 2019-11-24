@@ -78,7 +78,7 @@ void podevent_view_task(void* pvParameters) {
   const auto blue = makeRGBVal(0, 0, 255);
   const auto white = makeRGBVal(10, 10, 10);
   const auto none = makeRGBVal(0, 0, 0);
-  auto pixels = new rgbVal[pixel_count];
+  auto pixels = new rgb_t[pixel_count];
   for (uint8_t i = 0; i < pixel_count; i++) pixels[i] = none;
   ws2812_set(pixel_count, pixels);
 

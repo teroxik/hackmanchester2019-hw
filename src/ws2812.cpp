@@ -146,7 +146,7 @@ void ws2812_init(int gpioNum) {
   return;
 }
 
-void ws2812_set(unsigned int length, rgbVal *array) {
+void ws2812_set(unsigned int length, rgb_t *array) {
   unsigned int i;
 
   ws2812_len = (length * 3) * sizeof(uint8_t);

@@ -17,13 +17,13 @@ typedef union {
     uint8_t r, g, b;
   };
   uint32_t num;
-} rgbVal;
+} rgb_t;
 
 void ws2812_init(int gpioNum);
-void ws2812_set(unsigned int length, rgbVal *array);
+void ws2812_set(unsigned int length, rgb_t *array);
 
-inline rgbVal makeRGBVal(uint8_t r, uint8_t g, uint8_t b) {
-  rgbVal v;
+inline rgb_t makeRGBVal(uint8_t r, uint8_t g, uint8_t b) {
+  rgb_t v;
 
   v.r = r;
   v.g = g;
