@@ -21,28 +21,33 @@ inline void delay_nops(int nops) {
 
 void ws2812_naive_set(const int pixel_count, const rgb_t* pixels) {
   gpio_set_level(LED_STRIP_GPIO, 0);
-  ets_delay_us(50);
-
-  portMUX_TYPE mutex = portMUX_INITIALIZER_UNLOCKED;
-  const auto pixel = pixels[0].num;
+  ets_delay_us(52);
+  // portDISABLE_INTERRUPTS();
+  const auto pixel = pixels[0];
   bool x[24] = {0};
-  for (uint8_t j = 0; j < 24; j++) x[j] = ((pixel >> j) & 1) == 0;
+  for (uint8_t j = 0; j < 8; j++) x[7 - j] = ((pixel.g >> j) & 1) == 0;
+  for (uint8_t j = 0; j < 8; j++) x[15 - j] = ((pixel.r >> j) & 1) == 0;
+  for (uint8_t j = 0; j < 8; j++) x[23 - j] = ((pixel.b >> j) & 1) == 0;
   for (uint8_t j = 0; j < 24; j++) {
     if (!x[j]) {
-      gpio_set_level(LED_STRIP_GPIO, 1);
+      GPIO.out_w1ts = 1 << LED_STRIP_GPIO;
       delay_nops(20);
-      gpio_set_level(LED_STRIP_GPIO, 0);
+      GPIO.out_w1tc = 1 << LED_STRIP_GPIO;
+      delay_nops(2);
     }
     if (x[j]) {
-      gpio_set_level(LED_STRIP_GPIO, 1);
-      gpio_set_level(LED_STRIP_GPIO, 0);
-      delay_nops(17);
+      GPIO.out_w1ts = 1 << LED_STRIP_GPIO;
+      delay_nops(2);
+      GPIO.out_w1tc = 1 << LED_STRIP_GPIO;
+      delay_nops(20);
     }
   }
+  // portENABLE_INTERRUPTS();
 }
 
 void led_strip_task(void*) {
-  bool naive = false;
+  esp_task_wdt_init(portMAX_DELAY, false);
+  bool naive = true;
   if (naive) {
     gpio_pad_select_gpio(LED_STRIP_GPIO);
     gpio_set_direction(LED_STRIP_GPIO, GPIO_MODE_OUTPUT);
@@ -50,26 +55,30 @@ void led_strip_task(void*) {
     ws2812_init(LED_STRIP_GPIO);
   }
   const auto pixel_count = 1;
-  const auto green = makeRGBVal(0, 255, 0);
-  const auto red = makeRGBVal(255, 0, 0);
-  const auto blue = makeRGBVal(0, 0, 255);
-  const auto white = makeRGBVal(10, 10, 10);
-  const auto none = makeRGBVal(0, 0, 0);
+  const auto green = makeRGBVal(0, 100, 0);
+  const auto red = makeRGBVal(100, 0, 0);
+  const auto blue = makeRGBVal(0, 0, 100);
   auto pixels = new rgb_t[pixel_count];
-  // for (uint8_t i = 0; i < pixel_count; i++) pixels[i] = none;
-  // long count = 0;
-  // while (true) {
-  //   count += 16;
-  //   pixels[0].num = count % UINT32_MAX;
-  //   ws2812_set(pixel_count, pixels);
-  //   vTaskDelay(1);
-  // }
   auto color = makeRGBVal(200, 0, 0);
   uint8_t step = 0;
 
   // ets_delay_us();
 
   while (1) {
+    // switch (step) {
+    //   case 0:
+    //     color = red;
+    //     step = 1;
+    //     break;
+    //   case 1:
+    //     color = green;
+    //     step = 2;
+    //     break;
+    //   case 2:
+    //     color = blue;
+    //     step = 0;
+    //     break;
+    // }
     switch (step) {
       case 0:
         color.r++;
@@ -84,13 +93,19 @@ void led_strip_task(void*) {
         if (color.b == 255) step = 3;
         break;
       case 3:
-        color.r--;
-        if (color.r == 0) step = 4;
+        color.g--;
+        if (color.g == 0) step = 4;
         break;
       case 4:
-        color.g--;
+        color.r--;
+        if (color.r == 0) step = 5;
+        break;
+      case 5:
         color.b--;
-        if (color.g == 0) step = 0;
+        if (color.b == 0) {
+          vTaskDelay(pdMS_TO_TICKS(10000));
+          step = 0;
+        }
         break;
     }
     pixels[0] = color;
