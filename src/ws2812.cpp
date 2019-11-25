@@ -174,7 +174,7 @@ void ws2812_set(unsigned int length, rgb_t *array) {
   vSemaphoreDelete(ws2812_sem);
   ws2812_sem = NULL;
 
-  free(ws2812_buffer);
+  delete[] ws2812_buffer;
 
   return;
 }
