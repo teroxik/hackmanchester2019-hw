@@ -13,10 +13,23 @@
 #include <bitset>
 #include <vector>
 
-inline void delay_nops(int nops) {
-  for (int i = 0; i < nops; i++) {
-    __asm__ __volatile__("nop");
-  }
+inline void delay_65ns() {
+  __asm__ __volatile__("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;");
+}
+
+inline void delay_960ns() {
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
+  delay_65ns();
 }
 
 void ws2812_naive_set(const int pixel_count, const rgb_t* pixels) {
@@ -31,15 +44,15 @@ void ws2812_naive_set(const int pixel_count, const rgb_t* pixels) {
   for (uint8_t j = 0; j < 24; j++) {
     if (!x[j]) {
       GPIO.out_w1ts = 1 << LED_STRIP_GPIO;
-      delay_nops(20);
+      delay_960ns();
       GPIO.out_w1tc = 1 << LED_STRIP_GPIO;
-      delay_nops(2);
+      delay_65ns();
     }
     if (x[j]) {
       GPIO.out_w1ts = 1 << LED_STRIP_GPIO;
-      delay_nops(2);
+      delay_65ns();
       GPIO.out_w1tc = 1 << LED_STRIP_GPIO;
-      delay_nops(20);
+      delay_960ns();
     }
   }
   // portENABLE_INTERRUPTS();
